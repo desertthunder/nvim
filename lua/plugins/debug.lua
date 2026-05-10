@@ -5,7 +5,6 @@ return {
     'nvim-neotest/nvim-nio',
     'mason-org/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
-    'leoluz/nvim-dap-go',
   },
   keys = {
     {
@@ -38,7 +37,6 @@ return {
       function() require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ') end,
       desc = 'Debug: Set Breakpoint',
     },
-    -- Toggle to see last session result.
     {
       '<F7>',
       function() require('dapui').toggle() end,
@@ -52,12 +50,9 @@ return {
     require('mason-nvim-dap').setup {
       automatic_installation = true,
       handlers = {},
-      ensure_installed = {
-        'delve',
-      },
+      ensure_installed = {},
     }
 
-    -- Dap UI setup
     dapui.setup {
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
       controls = {
@@ -90,13 +85,5 @@ return {
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
-
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
-      },
-    }
   end,
 }

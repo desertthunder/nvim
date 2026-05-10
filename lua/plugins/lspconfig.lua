@@ -95,6 +95,7 @@ return {
     local capabilities = require('blink.cmp').get_lsp_capabilities()
 
     local servers = {
+      gopls = {},
       lua_ls = {
         settings = {
           Lua = {
@@ -104,10 +105,16 @@ return {
           },
         },
       },
+      rust_analyzer = {},
+      ts_ls = {},
     }
 
     local ensure_installed = vim.tbl_keys(servers or {})
     vim.list_extend(ensure_installed, {
+      'dprint',
+      'eslint_d',
+      'goimports',
+      'markdownlint-cli2',
       'stylua',
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }

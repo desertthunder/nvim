@@ -4,7 +4,13 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
-      lint.linters_by_ft = { markdown = { 'markdownlint' } }
+      lint.linters_by_ft = {
+        javascript = { 'eslint_d' },
+        javascriptreact = { 'eslint_d' },
+        markdown = { 'markdownlint-cli2' },
+        typescript = { 'eslint_d' },
+        typescriptreact = { 'eslint_d' },
+      }
 
       local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
       vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {

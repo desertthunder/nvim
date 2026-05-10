@@ -1,7 +1,7 @@
 return {
   { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = {} },
   { 'folke/tokyonight.nvim' },
-  { 'EdenEast/nightfox.nvim' },
+  { 'EdenEast/nightfox.nvim', config = function() vim.cmd 'colorscheme carbonfox' end },
   {
     'desertthunder/iced-lightning.nvim',
     priority = 1000,
@@ -14,7 +14,6 @@ return {
           keywords = { italic = true },
         },
       }
-      vim.cmd 'colorscheme iced-lightning'
     end,
   },
   { 'NMAC427/guess-indent.nvim' },
