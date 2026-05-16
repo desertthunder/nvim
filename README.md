@@ -17,3 +17,8 @@
 mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 rsync -a --delete --exclude '.git/' --exclude '.vscode/' ./ "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/"
 ```
+
+## To-Do
+
+- [ ] Add language support for dart, elixir, and gleam
+- [ ] Add svelte, tailwind, astro, and heex support

@@ -10,6 +10,9 @@ vim.o.mouse = 'a'
 -- Hide mode (shown in statusline)
 vim.o.showmode = false
 
+-- Required by true-color themes and plugins that render inline color previews.
+vim.o.termguicolors = true
+
 -- Sync clipboard with OS
 vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 

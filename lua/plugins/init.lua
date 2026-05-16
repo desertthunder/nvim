@@ -1,7 +1,16 @@
+local config_root = vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':p:h:h:h')
+
 return {
   { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = {} },
   { 'folke/tokyonight.nvim' },
-  { 'EdenEast/nightfox.nvim', config = function() vim.cmd 'colorscheme carbonfox' end },
+  { 'EdenEast/nightfox.nvim' },
+  {
+    dir = config_root,
+    name = 'vitesse.nvim',
+    lazy = false,
+    priority = 1000,
+    config = function() vim.cmd.colorscheme 'vitesse-dark' end,
+  },
   {
     'desertthunder/iced-lightning.nvim',
     priority = 1000,
