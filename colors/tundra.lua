@@ -1,1 +1,1 @@
-require('themes.tundra').setup(nil, 'tundra')
+require('custom.themes.tundra').setup(nil, 'tundra')

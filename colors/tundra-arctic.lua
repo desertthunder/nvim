@@ -1,1 +1,1 @@
-require('themes.tundra').setup('arctic', 'tundra-arctic')
+require('custom.themes.tundra').setup('arctic', 'tundra-arctic')

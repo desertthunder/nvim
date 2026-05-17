@@ -1,1 +1,1 @@
-require('themes.tundra').setup('jungle', 'tundra-jungle')
+require('custom.themes.tundra').setup('jungle', 'tundra-jungle')
