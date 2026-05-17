@@ -1,1 +1,1 @@
-require('vitesse').setup 'vitesse-light-soft'
+require('themes.vitesse').setup 'vitesse-light-soft'

@@ -1,1 +1,1 @@
-require('vitesse').setup 'vitesse-black'
+require('themes.vitesse').setup 'vitesse-black'

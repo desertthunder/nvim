@@ -7,9 +7,21 @@ return {
   {
     dir = config_root,
     name = 'vitesse.nvim',
+    lazy = true,
+    -- Local theme variants:
+    --   vitesse-dark, vitesse-black, vitesse-dark-soft
+    --   vitesse-light, vitesse-light-soft
+  },
+  {
+    dir = config_root,
+    name = 'tundra.nvim',
     lazy = false,
     priority = 1000,
-    config = function() vim.cmd.colorscheme 'vitesse-dark' end,
+    config = function()
+      -- Local theme variants:
+      --   tundra, tundra-arctic, tundra-jungle
+      vim.cmd.colorscheme 'tundra'
+    end,
   },
   {
     'desertthunder/iced-lightning.nvim',
