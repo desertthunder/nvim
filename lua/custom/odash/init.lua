@@ -190,6 +190,22 @@ local function set_highlights()
   vim.api.nvim_set_hl(0, 'ODashFooter', { link = 'Comment', default = true })
 end
 
+local function hide_statusline()
+  if vim.g.odash_laststatus == nil then
+    vim.g.odash_laststatus = vim.o.laststatus
+  end
+
+  vim.o.laststatus = 0
+end
+
+local function restore_statusline()
+  local laststatus = vim.g.odash_laststatus
+  if laststatus == nil then return end
+
+  vim.o.laststatus = tonumber(laststatus) or 2
+  vim.g.odash_laststatus = nil
+end
+
 ---@param buf? integer
 ---@param win? integer
 ---@param action? 'open'|'redraw'
@@ -207,6 +223,7 @@ function M.open(buf, win, action)
 
   if action == 'open' then
     api.nvim_win_set_buf(win, buf)
+    hide_statusline()
   end
 
   local dashboard_w = 0
@@ -364,6 +381,7 @@ function M.open(buf, win, action)
     buffer = buf,
     callback = function()
       vim.g.odash_displayed = false
+      restore_statusline()
       pcall(api.nvim_del_augroup_by_name, 'ODash')
     end,
   })

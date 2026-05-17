@@ -1,37 +1,34 @@
-local config_root = vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':p:h:h:h')
-
 return {
   { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = {} },
   { 'folke/tokyonight.nvim' },
   { 'EdenEast/nightfox.nvim' },
+  { 'ptdewey/darkearth-nvim', lazy = true },
   {
-    -- Local theme variants:
-    --   vitesse-dark, vitesse-black, vitesse-dark-soft
-    --   vitesse-light, vitesse-light-soft
-    dir = config_root,
-    name = 'vitesse.nvim',
-    lazy = true,
+    'ptdewey/vitesse-nvim',
     priority = 1000,
-    config = function() vim.cmd.colorscheme 'vitesse-dark' end,
+    config = function() vim.cmd.colorscheme 'vitesse' end,
   },
   {
-    -- Local theme variants:
-    --   tundra, tundra-arctic, tundra-jungle
-    dir = config_root,
-    name = 'tundra.nvim',
-    lazy = false,
+    'sam4llis/nvim-tundra',
+    lazy = true,
+    init = function() vim.g.tundra_biome = vim.g.tundra_biome or 'arctic' end,
+    opts = {
+      plugins = {
+        lsp = true,
+        semantic_tokens = true,
+        treesitter = true,
+        telescope = true,
+        gitsigns = true,
+      },
+    },
   },
   {
     'desertthunder/iced-lightning.nvim',
-    priority = 1000,
     config = function()
       require('iced-lightning').setup {
         transparent = false,
         terminal_colors = true,
-        styles = {
-          comments = { italic = true },
-          keywords = { italic = true },
-        },
+        styles = { comments = { italic = true }, keywords = { italic = true } },
       }
     end,
   },
@@ -78,12 +75,7 @@ return {
     opts = {
       options = {
         offsets = {
-          {
-            filetype = 'neo-tree',
-            text = 'Neo-tree',
-            highlight = 'Directory',
-            text_align = 'left',
-          },
+          { filetype = 'neo-tree', text = 'Neo-tree', highlight = 'Directory', text_align = 'left' },
         },
       },
     },
