@@ -1,76 +1,4 @@
-local A = {}
-
-A.sharp = {
-  [[                                                                       ]],
-  [[                                                                     ]],
-  [[       ████ ██████           █████      ██                     ]],
-  [[      ███████████             █████                             ]],
-  [[      █████████ ███████████████████ ███   ███████████   ]],
-  [[     █████████  ███    █████████████ █████ ██████████████   ]],
-  [[    █████████ ██████████ █████████ █████ █████ ████ █████   ]],
-  [[  ███████████ ███    ███ █████████ █████ █████ ████ █████  ]],
-  [[ ██████  █████████████████████ ████ █████ █████ ████ ██████ ]],
-  [[                                                                       ]],
-}
-
-A.colossal = {
-  [[                                                            ]],
-  [[ 888b    888                  888     888 d8b               ]],
-  [[ 8888b   888                  888     888 Y8P               ]],
-  [[ 88888b  888                  888     888                   ]],
-  [[ 888Y88b 888  .d88b.   .d88b. Y88b   d88P 888 88888b.d88b.  ]],
-  [[ 888 Y88b888 d8P  Y8b d88""88b Y88b d88P  888 888 "888 "88b ]],
-  [[ 888  Y88888 88888888 888  888  Y88o88P   888 888  888  888 ]],
-  [[ 888   Y8888 Y8b.     Y88..88P   Y888P    888 888  888  888 ]],
-  [[ 888    Y888  "Y8888   "Y88P"     Y8P     888 888  888  888 ]],
-  [[
-  ]],
-}
-
-A.delta = {
-  [[                                                                   ]],
-  [[ ███▄▄▄▄      ▄████████  ▄██████▄   ▄█    █▄   ▄█    ▄▄▄▄███▄▄▄▄   ]],
-  [[ ███▀▀▀██▄   ███    ███ ███    ███ ███    ███ ███  ▄██▀▀▀███▀▀▀██▄ ]],
-  [[ ███   ███   ███    █▀  ███    ███ ███    ███ ███▌ ███   ███   ███ ]],
-  [[ ███   ███  ▄███▄▄▄     ███    ███ ███    ███ ███▌ ███   ███   ███ ]],
-  [[ ███   ███ ▀▀███▀▀▀     ███    ███ ███    ███ ███▌ ███   ███   ███ ]],
-  [[ ███   ███   ███    █▄  ███    ███ ███    ███ ███  ███   ███   ███ ]],
-  [[ ███   ███   ███    ███ ███    ███ ███    ███ ███  ███   ███   ███ ]],
-  [[  ▀█   █▀    ██████████  ▀██████▀   ▀██████▀  █▀    ▀█   ███   █▀  ]],
-  [[                                                                   ]],
-}
-
-A.dos = {
-  [[                                                                       ]],
-  [[  ██████   █████                   █████   █████  ███                  ]],
-  [[ ░░██████ ░░███                   ░░███   ░░███  ░░░                   ]],
-  [[  ░███░███ ░███   ██████   ██████  ░███    ░███  ████  █████████████   ]],
-  [[  ░███░░███░███  ███░░███ ███░░███ ░███    ░███ ░░███ ░░███░░███░░███  ]],
-  [[  ░███ ░░██████ ░███████ ░███ ░███ ░░███   ███   ░███  ░███ ░███ ░███  ]],
-  [[  ░███  ░░█████ ░███░░░  ░███ ░███  ░░░█████░    ░███  ░███ ░███ ░███  ]],
-  [[  █████  ░░█████░░██████ ░░██████     ░░███      █████ █████░███ █████ ]],
-  [[ ░░░░░    ░░░░░  ░░░░░░   ░░░░░░       ░░░      ░░░░░ ░░░░░ ░░░ ░░░░░  ]],
-  [[                                                                       ]],
-}
-
-local function hide_statusline(event)
-  if vim.g.alpha_dashboard_laststatus == nil then vim.g.alpha_dashboard_laststatus = vim.o.laststatus end
-
-  vim.o.laststatus = 0
-
-  vim.api.nvim_create_autocmd('BufUnload', {
-    buffer = event.buf,
-    once = true,
-    callback = function()
-      local laststatus = vim.g.alpha_dashboard_laststatus
-      if laststatus == nil then return end
-
-      vim.o.laststatus = tonumber(laststatus) or 2
-      vim.g.alpha_dashboard_laststatus = nil
-    end,
-  })
-end
-
+--#region Package Management (vim-pack)
 local function pack_info(name)
   for _, plug in ipairs(vim.pack.get()) do
     if plug.spec and plug.spec.name == name then return plug end
@@ -114,7 +42,6 @@ vim.pack.add({
   'https://github.com/MunifTanjim/nui.nvim',
   'https://github.com/nvim-neotest/nvim-nio',
 
-  'https://github.com/goolord/alpha-nvim',
   'https://github.com/windwp/nvim-autopairs',
   'https://github.com/folke/tokyonight.nvim',
   'https://github.com/EdenEast/nightfox.nvim',
@@ -150,22 +77,7 @@ vim.pack.add({
   'https://github.com/rcarriga/nvim-dap-ui',
   'https://github.com/jay-babu/mason-nvim-dap.nvim',
 }, { confirm = false })
-
-require('alpha').setup((function()
-  local dashboard = require 'alpha.themes.dashboard'
-  dashboard.section.header.val = A.sharp
-  dashboard.section.buttons.val = {
-    dashboard.button('f', 'Find File', '<cmd>Telescope find_files<cr>'),
-    dashboard.button('r', 'Recent Files', '<cmd>Telescope oldfiles<cr>'),
-    dashboard.button('w', 'Find Word', '<cmd>Telescope live_grep<cr>'),
-    dashboard.button('c', 'Config Files', '<cmd>Telescope find_files cwd=' .. vim.fn.stdpath 'config' .. '<cr>'),
-    dashboard.button('n', 'New File', '<cmd>enew<cr>'),
-    dashboard.button('q', 'Quit', '<cmd>qa<cr>'),
-  }
-  dashboard.section.footer.val = 'Managed by vim.pack (' .. #vim.pack.get() .. ' plugins)'
-  vim.api.nvim_create_autocmd('FileType', { pattern = 'alpha', callback = hide_statusline })
-  return dashboard.config
-end)())
+--#endregion
 
 require('nvim-autopairs').setup {}
 vim.g.tundra_biome = vim.g.tundra_biome or 'arctic'
@@ -183,7 +95,7 @@ vim.cmd.colorscheme 'vitesse'
 
 require('guess-indent').setup {}
 require('todo-comments').setup { signs = false }
-require('ibl').setup { exclude = { filetypes = { 'alpha', 'dashboard' } } }
+require('ibl').setup { exclude = { filetypes = { 'dashboard' } } }
 require('lazydev').setup { library = { { path = '${3rd}/luv/library', words = { 'vim%.uv' } } } }
 require('colorizer').setup { css = true, css_fn = true }
 
@@ -320,6 +232,7 @@ require('blink.cmp').setup {
 }
 require('luasnip').setup {}
 
+--#region Formatting and Linting
 require('conform').setup {
   notify_on_error = false,
   format_on_save = function(bufnr)
@@ -354,6 +267,7 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
     if vim.bo.modifiable then lint.try_lint() end
   end,
 })
+--#endregion
 
 require('gitsigns').setup {
   on_attach = function(bufnr)
