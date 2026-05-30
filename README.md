@@ -20,7 +20,8 @@ rsync -a --delete --exclude '.git/' --exclude '.vscode/' ./ "${XDG_CONFIG_HOME:-
 
 ### Updating Plugins
 
-`vim.pack` writes `nvim-pack-lock.json` to the active Neovim config directory. After updating plugins in the rsynced config, copy the lockfile back into this repo before committing:
+`vim.pack` writes `nvim-pack-lock.json` to the active Neovim config directory. After updating
+plugins in the rsynced config, copy the lockfile back into this repo before committing:
 
 ```sh
 nvim +'lua vim.pack.update()'

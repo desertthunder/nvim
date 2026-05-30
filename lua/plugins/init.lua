@@ -277,6 +277,7 @@ require('conform').setup {
 vim.keymap.set('', '<leader>f', function() require('conform').format { async = true, lsp_format = 'fallback' } end, { desc = '[F]ormat buffer' })
 
 local lint = require 'lint'
+lint.linters['markdownlint-cli2'].args = { '--config', vim.fn.stdpath 'config' .. '/.markdownlint-cli2.jsonc', '-' }
 lint.linters_by_ft = {
   javascript = { 'eslint_d' },
   javascriptreact = { 'eslint_d' },
