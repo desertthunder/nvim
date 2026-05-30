@@ -55,10 +55,9 @@ vim.pack.add({
   'https://github.com/folke/lazydev.nvim',
   'https://github.com/catgoose/nvim-colorizer.lua',
   'https://github.com/echasnovski/mini.nvim',
-  { src = 'https://github.com/akinsho/bufferline.nvim', version = vim.version.range '*' },
+  { src = 'https://github.com/ThePrimeagen/harpoon', version = 'harpoon2' },
   'https://github.com/desertthunder/cheatsheet.nvim',
   'https://github.com/folke/which-key.nvim',
-  { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim', version = vim.version.range '*' },
   'https://github.com/nvim-treesitter/nvim-treesitter',
   { src = 'https://github.com/L3MON4D3/LuaSnip', version = vim.version.range '2.x' },
   { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range '1.x' },
@@ -106,25 +105,31 @@ statusline.setup { use_icons = vim.g.have_nerd_font }
 ---@diagnostic disable-next-line: duplicate-set-field
 statusline.section_location = function() return '%2l:%-2v' end
 
-require('bufferline').setup {
-  options = {
-    offsets = {
-      { filetype = 'neo-tree', text = 'Neo-tree', highlight = 'Directory', text_align = 'left' },
-    },
-  },
-}
+--#region Buffer Management
+local harpoon = require 'harpoon'
+harpoon:setup {}
+
 vim.keymap.set('n', '<leader>bn', '<cmd>enew<cr>', { desc = 'New Buffer' })
 vim.keymap.set('n', '<leader>bd', '<cmd>bdelete<cr>', { desc = 'Delete Buffer' })
-vim.keymap.set('n', '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', { desc = 'Toggle Pin' })
-vim.keymap.set('n', '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', { desc = 'Delete Non-Pinned Buffers' })
-vim.keymap.set('n', '<leader>br', '<Cmd>BufferLineCloseRight<CR>', { desc = 'Delete Buffers to the Right' })
-vim.keymap.set('n', '<leader>bl', '<Cmd>BufferLineCloseLeft<CR>', { desc = 'Delete Buffers to the Left' })
-vim.keymap.set('n', '<S-h>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev Buffer' })
-vim.keymap.set('n', '<S-l>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next Buffer' })
-vim.keymap.set('n', '[b', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev Buffer' })
-vim.keymap.set('n', ']b', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next Buffer' })
-vim.keymap.set('n', '[B', '<cmd>BufferLineMovePrev<cr>', { desc = 'Move buffer prev' })
-vim.keymap.set('n', ']B', '<cmd>BufferLineMoveNext<cr>', { desc = 'Move buffer next' })
+vim.keymap.set('n', '<leader>ba', function() harpoon:list():add() end, { desc = 'Harpoon add buffer' })
+vim.keymap.set('n', '<leader>bh', function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = 'Harpoon menu' })
+vim.keymap.set('n', '<leader>bp', function() harpoon:list():prev() end, { desc = 'Harpoon previous' })
+vim.keymap.set('n', '<leader>bl', function() harpoon:list():next() end, { desc = 'Harpoon next' })
+vim.keymap.set('n', '<leader>1', function() harpoon:list():select(1) end, { desc = 'Harpoon buffer 1' })
+vim.keymap.set('n', '<leader>2', function() harpoon:list():select(2) end, { desc = 'Harpoon buffer 2' })
+vim.keymap.set('n', '<leader>3', function() harpoon:list():select(3) end, { desc = 'Harpoon buffer 3' })
+vim.keymap.set('n', '<leader>4', function() harpoon:list():select(4) end, { desc = 'Harpoon buffer 4' })
+vim.keymap.set('n', '<leader>5', function() harpoon:list():select(5) end, { desc = 'Harpoon buffer 5' })
+vim.keymap.set('n', '<leader>6', function() harpoon:list():select(6) end, { desc = 'Harpoon buffer 6' })
+vim.keymap.set('n', '<leader>7', function() harpoon:list():select(7) end, { desc = 'Harpoon buffer 7' })
+vim.keymap.set('n', '<leader>8', function() harpoon:list():select(8) end, { desc = 'Harpoon buffer 8' })
+vim.keymap.set('n', '<leader>9', function() harpoon:list():select(9) end, { desc = 'Harpoon buffer 9' })
+vim.keymap.set('n', '<leader>0', function() harpoon:list():select(10) end, { desc = 'Harpoon buffer 10' })
+vim.keymap.set('n', '<S-h>', function() harpoon:list():prev() end, { desc = 'Harpoon previous' })
+vim.keymap.set('n', '<S-l>', function() harpoon:list():next() end, { desc = 'Harpoon next' })
+vim.keymap.set('n', '[b', function() harpoon:list():prev() end, { desc = 'Harpoon previous' })
+vim.keymap.set('n', ']b', function() harpoon:list():next() end, { desc = 'Harpoon next' })
+--#endregion
 
 local cheatsheet = require 'cheatsheet'
 cheatsheet.setup {
@@ -184,16 +189,35 @@ require('which-key').setup {
   },
 }
 
-require('neo-tree').setup {
-  enable_git_status = true,
-  sources = { 'filesystem', 'git_status' },
-  window = { position = 'right' },
-  source_selector = { winbar = true, statusline = false, sources = { { source = 'filesystem' }, { source = 'git_status' } } },
-  filesystem = { window = { mappings = { ['\\'] = 'close_window' } } },
-}
-vim.keymap.set('n', '<leader>te', ':Neotree reveal<CR>', { desc = 'NeoTree reveal', silent = true })
-vim.keymap.set('n', '<leader>tg', ':Neotree git_status<CR>', { desc = 'NeoTree git status', silent = true })
-vim.keymap.set('n', '\\', ':Neotree reveal<CR>', { desc = 'NeoTree reveal', silent = true })
+--#region File Explorer (netrw)
+vim.g.netrw_banner = 0
+vim.g.netrw_liststyle = 3
+vim.g.netrw_winsize = 25
+vim.g.netrw_browse_split = 4
+vim.g.netrw_altv = 1
+
+local function toggle_netrw_sidebar()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.bo[buf].filetype == 'netrw' then
+      vim.api.nvim_win_close(win, true)
+      return
+    end
+  end
+
+  local current_win = vim.api.nvim_get_current_win()
+  local dir = vim.fn.expand '%:p:h'
+  if dir == '' or vim.fn.isdirectory(dir) == 0 then dir = vim.fn.getcwd() end
+
+  vim.cmd(('botright vertical %dnew'):format(vim.g.netrw_winsize))
+  vim.wo.winfixwidth = true
+  vim.cmd.Explore(vim.fn.fnameescape(dir))
+  vim.api.nvim_set_current_win(current_win)
+end
+
+vim.keymap.set('n', '<leader>te', toggle_netrw_sidebar, { desc = 'Toggle netrw sidebar', silent = true })
+vim.keymap.set('n', '\\', toggle_netrw_sidebar, { desc = 'Toggle netrw sidebar', silent = true })
+--#endregion
 
 local ts = require 'nvim-treesitter'
 ts.setup { install_dir = vim.fn.stdpath 'data' .. '/site' }
