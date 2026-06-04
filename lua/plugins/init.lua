@@ -225,6 +225,7 @@ ts.install {
   'bash',
   'c',
   'diff',
+  'gleam',
   'go',
   'html',
   'javascript',
@@ -239,6 +240,7 @@ ts.install {
   'typescript',
   'vim',
   'vimdoc',
+  'zig',
 }
 vim.api.nvim_create_autocmd('FileType', { callback = function(args) pcall(vim.treesitter.start, args.buf) end })
 
@@ -265,6 +267,7 @@ require('conform').setup {
     return { timeout_ms = 500, lsp_format = 'fallback' }
   end,
   formatters_by_ft = {
+    gleam = { 'gleam' },
     go = { 'goimports', 'gofmt' },
     javascript = { 'dprint' },
     javascriptreact = { 'dprint' },
@@ -272,6 +275,7 @@ require('conform').setup {
     rust = { 'rustfmt' },
     typescript = { 'dprint' },
     typescriptreact = { 'dprint' },
+    zig = { 'zigfmt' },
   },
 }
 vim.keymap.set('', '<leader>f', function() require('conform').format { async = true, lsp_format = 'fallback' } end, { desc = '[F]ormat buffer' })
@@ -445,6 +449,11 @@ local servers = {
   lua_ls = { settings = { Lua = { completion = { callSnippet = 'Replace' } } } },
   rust_analyzer = {},
   ts_ls = {},
+  zls = {},
+}
+
+local external_servers = {
+  gleam = {},
 }
 
 local ensure_installed = vim.tbl_keys(servers or {})
@@ -457,17 +466,23 @@ vim.list_extend(ensure_installed, {
 })
 require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+local function setup_lsp_server(server_name, server)
+  server = server or {}
+  server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+  require('lspconfig')[server_name].setup(server)
+end
+
 require('mason-lspconfig').setup {
   ensure_installed = {},
   automatic_installation = false,
   handlers = {
-    function(server_name)
-      local server = servers[server_name] or {}
-      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      require('lspconfig')[server_name].setup(server)
-    end,
+    function(server_name) setup_lsp_server(server_name, servers[server_name]) end,
   },
 }
+
+for server_name, server in pairs(external_servers) do
+  setup_lsp_server(server_name, server)
+end
 --#endregion
 
 --#region Debugging
@@ -483,6 +498,21 @@ local dap = require 'dap'
 local dapui = require 'dapui'
 
 require('mason-nvim-dap').setup { automatic_installation = true, handlers = {}, ensure_installed = {} }
+
+if vim.fn.executable 'lldb-dap' == 1 then
+  dap.adapters.lldb = { type = 'executable', command = 'lldb-dap', name = 'lldb' }
+  dap.configurations.zig = {
+    {
+      name = 'Launch executable',
+      type = 'lldb',
+      request = 'launch',
+      program = function() return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file') end,
+      cwd = '${workspaceFolder}',
+      stopOnEntry = false,
+      args = {},
+    },
+  }
+end
 
 dapui.setup {
   icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },

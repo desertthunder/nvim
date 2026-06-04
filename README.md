@@ -3,6 +3,7 @@
 ## Configured Languages
 
 - Lua
+- Gleam
 - Go
 - Rust
 - TypeScript+JavaScript / JSX+TSX
@@ -10,6 +11,7 @@
 - Bash
 - C
 - C++
+- Zig
 
 ## Updating the Config
 
@@ -30,5 +32,5 @@ cp "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/nvim-pack-lock.json" ./nvim-pack-lock
 
 ## To-Do
 
-- [ ] Add language support for dart, elixir, and gleam
+- [ ] Add language support for dart and elixir
 - [ ] Add svelte, tailwind, astro, and heex support
