@@ -79,7 +79,9 @@ vim.pack.add({
 --#endregion
 
 require('nvim-autopairs').setup {}
+
 vim.g.tundra_biome = vim.g.tundra_biome or 'arctic'
+
 require('nvim-tundra').setup {
   plugins = {
     lsp = true,
@@ -90,6 +92,7 @@ require('nvim-tundra').setup {
   },
 }
 require('iced-lightning').setup { transparent = false, terminal_colors = true, styles = { comments = { italic = true }, keywords = { italic = true } } }
+
 vim.cmd.colorscheme 'vitesse'
 
 require('guess-indent').setup {}
@@ -452,11 +455,10 @@ local servers = {
   zls = {},
 }
 
-local external_servers = {
-  gleam = {},
-}
+local external_servers = { gleam = {} }
 
-local ensure_installed = vim.tbl_keys(servers or {})
+local lsp_servers = vim.tbl_keys(servers or {})
+local ensure_installed = vim.deepcopy(lsp_servers)
 vim.list_extend(ensure_installed, {
   'dprint',
   'eslint_d',
@@ -466,22 +468,24 @@ vim.list_extend(ensure_installed, {
 })
 require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-local function setup_lsp_server(server_name, server)
+local function configure_lsp_server(server_name, server)
   server = server or {}
   server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-  require('lspconfig')[server_name].setup(server)
+  vim.lsp.config(server_name, server)
+end
+
+for server_name, server in pairs(servers) do
+  configure_lsp_server(server_name, server)
 end
 
 require('mason-lspconfig').setup {
-  ensure_installed = {},
-  automatic_installation = false,
-  handlers = {
-    function(server_name) setup_lsp_server(server_name, servers[server_name]) end,
-  },
+  ensure_installed = lsp_servers,
+  automatic_enable = lsp_servers,
 }
 
 for server_name, server in pairs(external_servers) do
-  setup_lsp_server(server_name, server)
+  configure_lsp_server(server_name, server)
+  vim.lsp.enable(server_name)
 end
 --#endregion
 
