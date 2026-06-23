@@ -59,6 +59,7 @@ vim.pack.add({
   'https://github.com/desertthunder/cheatsheet.nvim',
   'https://github.com/folke/which-key.nvim',
   'https://github.com/nvim-treesitter/nvim-treesitter',
+  'https://github.com/nvim-treesitter/nvim-treesitter-textobjects',
   { src = 'https://github.com/L3MON4D3/LuaSnip', version = vim.version.range '2.x' },
   { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range '1.x' },
   'https://github.com/stevearc/conform.nvim',
@@ -101,7 +102,79 @@ require('ibl').setup { exclude = { filetypes = { 'dashboard' } } }
 require('lazydev').setup { library = { { path = '${3rd}/luv/library', words = { 'vim%.uv' } } } }
 require('colorizer').setup { css = true, css_fn = true }
 
-require('mini.ai').setup { n_lines = 500 }
+local treesitter_textobjects_path = vim.fn.stdpath 'data' .. '/site/pack/core/opt/nvim-treesitter-textobjects'
+if vim.fn.isdirectory(treesitter_textobjects_path) == 1 then vim.opt.runtimepath:append(treesitter_textobjects_path) end
+
+local ai = require 'mini.ai'
+local ai_spec = ai.gen_spec
+
+local function indent_textobj(include_after)
+  return function(ai_type)
+    local line_count = vim.api.nvim_buf_line_count(0)
+    local cursor_line = vim.fn.line '.'
+
+    while cursor_line <= line_count and vim.fn.getline(cursor_line):match '^%s*$' do
+      cursor_line = cursor_line + 1
+    end
+    if cursor_line > line_count then return nil end
+
+    local base_indent = vim.fn.indent(cursor_line)
+    local start_line = cursor_line
+    while start_line > 1 do
+      local prev = start_line - 1
+      local text = vim.fn.getline(prev)
+      if text:match '^%s*$' or vim.fn.indent(prev) >= base_indent then
+        start_line = prev
+      else
+        break
+      end
+    end
+
+    local end_line = cursor_line
+    while end_line < line_count do
+      local next_line = end_line + 1
+      local text = vim.fn.getline(next_line)
+      if text:match '^%s*$' or vim.fn.indent(next_line) >= base_indent then
+        end_line = next_line
+      else
+        break
+      end
+    end
+
+    if ai_type == 'a' then
+      start_line = math.max(1, start_line - 1)
+      if include_after then end_line = math.min(line_count, end_line + 1) end
+    end
+
+    return {
+      from = { line = start_line, col = 1 },
+      to = { line = end_line, col = math.max(vim.fn.getline(end_line):len(), 1) },
+      vis_mode = 'V',
+    }
+  end
+end
+
+require('mini.ai').setup {
+  n_lines = 500,
+  custom_textobjects = {
+    -- These use nvim-treesitter-textobjects query captures when a language provides them.
+    c = ai_spec.treesitter({ a = '@class.outer', i = '@class.inner' }),
+    f = ai_spec.treesitter({ a = '@function.outer', i = '@function.inner' }),
+
+    -- mini.ai-style aliases for any quote or bracket.
+    --
+    -- The bracket alias intentionally includes angle brackets, unlike mini.ai's default `b`.
+    q = { { '%b""', "%b''", '%b``' }, '^.().*().$' },
+    Q = { { '%b""', "%b''", '%b``' }, '^.().*().$' },
+    b = { { '%b()', '%b[]', '%b{}', '%b<>' }, '^.().*().$' },
+    B = { { '%b()', '%b[]', '%b{}', '%b<>' }, '^.().*().$' },
+
+    -- `ai` includes the line before the indent block,
+    -- `ii` selects the indent block, and `aI` also includes one line after it.
+    i = indent_textobj(false),
+    I = indent_textobj(true),
+  },
+}
 require('mini.surround').setup()
 local statusline = require 'mini.statusline'
 statusline.setup { use_icons = vim.g.have_nerd_font }
